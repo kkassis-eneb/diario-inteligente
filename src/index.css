@@ -2,41 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Intelligent Diary Design System - Emotion-based colors and gradients */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base theme - warm and calming */
+    --background: 45 15% 97%;
+    --foreground: 25 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 25 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 25 20% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 45 82% 55%;
+    --primary-foreground: 25 20% 15%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 45 25% 92%;
+    --secondary-foreground: 25 20% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 45 15% 95%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 200 80% 70%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 45 20% 88%;
+    --input: 45 20% 88%;
+    --ring: 45 82% 55%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Emotion-based color system */
+    --joy: 45 95% 65%;
+    --calm: 210 75% 70%;
+    --love: 330 70% 80%;
+    --hope: 120 65% 70%;
+    --pride: 30 85% 65%;
+    --inspiration: 35 90% 70%;
+    --curiosity: 25 40% 60%;
+    --awe: 270 65% 75%;
+    --sadness: 260 45% 65%;
+    --anxiety: 0 0% 25%;
+    --fear: 0 0% 25%;
+    --anger: 0 75% 60%;
+    --guilt: 0 0% 80%;
+    --fatigue: 0 0% 85%;
+    --loneliness: 200 15% 65%;
+    --relief: 200 70% 70%;
+    --flow: 195 75% 65%;
+
+    /* Gradients for backgrounds */
+    --gradient-main: linear-gradient(135deg, hsl(var(--background)), hsl(45 30% 94%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(45 20% 98%));
+    --gradient-joy: linear-gradient(135deg, hsl(var(--joy)), hsl(50 90% 75%));
+    --gradient-calm: linear-gradient(135deg, hsl(var(--calm)), hsl(220 70% 80%));
+    --gradient-wellbeing: linear-gradient(135deg, hsl(var(--joy) / 0.2), hsl(var(--calm) / 0.2));
+    --gradient-neutral: linear-gradient(135deg, hsl(var(--curiosity) / 0.2), hsl(var(--muted)));
+    --gradient-distress: linear-gradient(135deg, hsl(var(--sadness) / 0.2), hsl(var(--anxiety) / 0.1));
+
+    /* Shadows with emotion tints */
+    --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.1);
+    --shadow-card: 0 2px 12px -2px hsl(var(--foreground) / 0.08);
+    --shadow-emotion: 0 8px 30px -8px hsl(var(--primary) / 0.15);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
     --sidebar-background: 0 0% 98%;
 

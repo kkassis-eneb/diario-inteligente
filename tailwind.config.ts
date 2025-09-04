@@ -61,7 +61,45 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				/* Emotion colors from design system */
+				emotion: {
+					joy: 'hsl(var(--joy))',
+					calm: 'hsl(var(--calm))',
+					love: 'hsl(var(--love))',
+					hope: 'hsl(var(--hope))',
+					pride: 'hsl(var(--pride))',
+					inspiration: 'hsl(var(--inspiration))',
+					curiosity: 'hsl(var(--curiosity))',
+					awe: 'hsl(var(--awe))',
+					sadness: 'hsl(var(--sadness))',
+					anxiety: 'hsl(var(--anxiety))',
+					fear: 'hsl(var(--fear))',
+					anger: 'hsl(var(--anger))',
+					guilt: 'hsl(var(--guilt))',
+					fatigue: 'hsl(var(--fatigue))',
+					loneliness: 'hsl(var(--loneliness))',
+					relief: 'hsl(var(--relief))',
+					flow: 'hsl(var(--flow))'
 				}
+			},
+			backgroundImage: {
+				'gradient-main': 'var(--gradient-main)',
+				'gradient-card': 'var(--gradient-card)',
+				'gradient-joy': 'var(--gradient-joy)',
+				'gradient-calm': 'var(--gradient-calm)',
+				'gradient-wellbeing': 'var(--gradient-wellbeing)',
+				'gradient-neutral': 'var(--gradient-neutral)',
+				'gradient-distress': 'var(--gradient-distress)'
+			},
+			boxShadow: {
+				'soft': 'var(--shadow-soft)',
+				'card': 'var(--shadow-card)',
+				'emotion': 'var(--shadow-emotion)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)',
+				'bounce': 'var(--transition-bounce)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
