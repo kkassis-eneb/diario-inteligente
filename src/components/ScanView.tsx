@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, FileText, Upload } from "lucide-react";
+import { Camera, FileText, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useCamera } from "@/hooks/useCamera";
 
 interface ScanViewProps {
   onViewChange: (view: string) => void;
@@ -9,11 +10,20 @@ interface ScanViewProps {
 
 export const ScanView = ({ onViewChange }: ScanViewProps) => {
   const { toast } = useToast();
+  const { captureAndUpload, isProcessing } = useCamera();
+
+  const handleCameraCapture = async () => {
+    try {
+      await captureAndUpload();
+    } catch (error) {
+      // Error is already handled in the hook
+    }
+  };
 
   const handleScan = (type: string) => {
     toast({
       title: "Funcionalidad en desarrollo",
-      description: `${type} estará disponible cuando conectes a Supabase para procesar OCR y análisis de emociones.`,
+      description: `${type} estará disponible pronto.`,
       duration: 4000,
     });
   };
@@ -32,11 +42,16 @@ export const ScanView = ({ onViewChange }: ScanViewProps) => {
       <div className="space-y-4">
         <Card className="p-6 bg-gradient-card shadow-card">
           <Button 
-            onClick={() => handleScan('Foto de cámara')}
-            className="w-full h-20 bg-primary text-primary-foreground shadow-soft hover:shadow-emotion transition-all duration-300 text-lg font-semibold"
+            onClick={handleCameraCapture}
+            disabled={isProcessing}
+            className="w-full h-20 bg-primary text-primary-foreground shadow-soft hover:shadow-emotion transition-all duration-300 text-lg font-semibold disabled:opacity-50"
           >
-            <Camera className="mr-3" size={28} />
-            Tomar Foto
+            {isProcessing ? (
+              <Loader2 className="mr-3 animate-spin" size={28} />
+            ) : (
+              <Camera className="mr-3" size={28} />
+            )}
+            {isProcessing ? 'Procesando...' : 'Tomar Foto'}
           </Button>
         </Card>
 

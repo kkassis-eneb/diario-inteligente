@@ -14,7 +14,134 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      archivos: {
+        Row: {
+          created_at: string | null
+          entrada_id: string | null
+          hash: string | null
+          id: string
+          tipo: string
+          url_privada: string
+        }
+        Insert: {
+          created_at?: string | null
+          entrada_id?: string | null
+          hash?: string | null
+          id?: string
+          tipo: string
+          url_privada: string
+        }
+        Update: {
+          created_at?: string | null
+          entrada_id?: string | null
+          hash?: string | null
+          id?: string
+          tipo?: string
+          url_privada?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archivos_entrada_id_fkey"
+            columns: ["entrada_id"]
+            isOneToOne: false
+            referencedRelation: "entradas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entradas: {
+        Row: {
+          año: number | null
+          ciudad: string | null
+          color_hex: string | null
+          confianza_modelo: number | null
+          confianza_ubicacion: number | null
+          created_at: string | null
+          dia_semana: number | null
+          emocion_principal: string | null
+          emociones_secundarias: string[] | null
+          emoji: string | null
+          estado_validacion: string | null
+          fecha: string
+          fuente: string
+          hash_archivo: string | null
+          id: string
+          intensidad: number | null
+          lugar_nombre: string | null
+          lugar_tipo: string | null
+          mes: number | null
+          origen_ubicacion: string | null
+          pais: string | null
+          region: string | null
+          tags_comportamiento: string[] | null
+          tags_tema: string[] | null
+          texto_ocr: string | null
+          ubicacion_lat: number | null
+          ubicacion_lon: number | null
+          valencia: string | null
+        }
+        Insert: {
+          año?: number | null
+          ciudad?: string | null
+          color_hex?: string | null
+          confianza_modelo?: number | null
+          confianza_ubicacion?: number | null
+          created_at?: string | null
+          dia_semana?: number | null
+          emocion_principal?: string | null
+          emociones_secundarias?: string[] | null
+          emoji?: string | null
+          estado_validacion?: string | null
+          fecha?: string
+          fuente: string
+          hash_archivo?: string | null
+          id?: string
+          intensidad?: number | null
+          lugar_nombre?: string | null
+          lugar_tipo?: string | null
+          mes?: number | null
+          origen_ubicacion?: string | null
+          pais?: string | null
+          region?: string | null
+          tags_comportamiento?: string[] | null
+          tags_tema?: string[] | null
+          texto_ocr?: string | null
+          ubicacion_lat?: number | null
+          ubicacion_lon?: number | null
+          valencia?: string | null
+        }
+        Update: {
+          año?: number | null
+          ciudad?: string | null
+          color_hex?: string | null
+          confianza_modelo?: number | null
+          confianza_ubicacion?: number | null
+          created_at?: string | null
+          dia_semana?: number | null
+          emocion_principal?: string | null
+          emociones_secundarias?: string[] | null
+          emoji?: string | null
+          estado_validacion?: string | null
+          fecha?: string
+          fuente?: string
+          hash_archivo?: string | null
+          id?: string
+          intensidad?: number | null
+          lugar_nombre?: string | null
+          lugar_tipo?: string | null
+          mes?: number | null
+          origen_ubicacion?: string | null
+          pais?: string | null
+          region?: string | null
+          tags_comportamiento?: string[] | null
+          tags_tema?: string[] | null
+          texto_ocr?: string | null
+          ubicacion_lat?: number | null
+          ubicacion_lon?: number | null
+          valencia?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
