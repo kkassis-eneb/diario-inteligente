@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, FileText, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useCamera } from "@/hooks/useCamera";
+import { FileUpload } from "@/components/FileUpload";
 
 interface ScanViewProps {
   onViewChange: (view: string) => void;
@@ -55,27 +56,12 @@ export const ScanView = ({ onViewChange }: ScanViewProps) => {
           </Button>
         </Card>
 
-        <Card className="p-6 bg-gradient-card shadow-card">
-          <Button 
-            onClick={() => handleScan('Archivo PDF')}
-            variant="outline"
-            className="w-full h-20 border-2 border-dashed border-border hover:border-primary/50 bg-background/50 hover:bg-background/80 transition-all duration-300 text-lg font-semibold"
-          >
-            <FileText className="mr-3" size={28} />
-            Subir PDF
-          </Button>
-        </Card>
-
-        <Card className="p-6 bg-gradient-card shadow-card">
-          <Button 
-            onClick={() => handleScan('Imagen desde galería')}
-            variant="outline"
-            className="w-full h-20 border-2 border-dashed border-border hover:border-primary/50 bg-background/50 hover:bg-background/80 transition-all duration-300 text-lg font-semibold"
-          >
-            <Upload className="mr-3" size={28} />
-            Subir Imagen
-          </Button>
-        </Card>
+        <FileUpload onUploadComplete={() => {
+          toast({
+            title: "Archivo procesado",
+            description: "Tu archivo ha sido procesado correctamente",
+          });
+        }} />
       </div>
 
       <Card className="p-6 bg-gradient-neutral shadow-card">

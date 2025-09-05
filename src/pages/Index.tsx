@@ -4,14 +4,34 @@ import { HomeView } from "@/components/HomeView";
 import { CalendarView } from "@/components/CalendarView";
 import { InsightsView } from "@/components/InsightsView";
 import { ScanView } from "@/components/ScanView";
+import { FeedView } from "@/components/FeedView";
+import { EntryDetail } from "@/components/EntryDetail";
+import { MapView } from "@/components/MapView";
 
 const Index = () => {
   const [currentView, setCurrentView] = useState('home');
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
   const renderView = () => {
+    if (selectedEntryId) {
+      return (
+        <EntryDetail 
+          entryId={selectedEntryId} 
+          onBack={() => setSelectedEntryId(null)} 
+        />
+      );
+    }
+
     switch (currentView) {
       case 'home':
         return <HomeView onViewChange={setCurrentView} />;
+      case 'feed':
+        return (
+          <FeedView 
+            onViewChange={setCurrentView} 
+            onEntrySelect={setSelectedEntryId}
+          />
+        );
       case 'calendar':
         return <CalendarView />;
       case 'insights':
@@ -19,12 +39,7 @@ const Index = () => {
       case 'scan':
         return <ScanView onViewChange={setCurrentView} />;
       case 'map':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-bold text-foreground mb-4">Vista de Mapa</h2>
-            <p className="text-muted-foreground">Próximamente: Visualización de ubicaciones con emociones</p>
-          </div>
-        );
+        return <MapView onViewChange={setCurrentView} />;
       default:
         return <HomeView onViewChange={setCurrentView} />;
     }
@@ -35,7 +50,9 @@ const Index = () => {
       <div className="max-w-lg mx-auto px-4 py-6">
         {renderView()}
       </div>
-      <Navigation currentView={currentView} onViewChange={setCurrentView} />
+      {!selectedEntryId && (
+        <Navigation currentView={currentView} onViewChange={setCurrentView} />
+      )}
     </div>
   );
 };

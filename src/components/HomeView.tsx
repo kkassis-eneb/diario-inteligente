@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Camera, Heart, TrendingUp, Calendar } from "lucide-react";
+import { Camera, Heart, TrendingUp, Calendar, BookOpen, BarChart3, Map } from "lucide-react";
 import { EmotionCard } from "./EmotionCard";
 
 const todayEmotion = {
@@ -105,22 +105,41 @@ export const HomeView = ({ onViewChange }: HomeViewProps) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4">
         <Button 
-          variant="outline" 
+          onClick={() => onViewChange('feed')}
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-card hover:shadow-emotion transition-all duration-300"
+        >
+          <BookOpen size={24} />
+          <span className="text-sm font-medium">Feed</span>
+        </Button>
+
+        <Button 
           onClick={() => onViewChange('calendar')}
-          className="p-4 h-auto flex flex-col gap-2 bg-background/50 hover:bg-background/80 transition-all duration-200"
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-card hover:shadow-emotion transition-all duration-300"
         >
           <Calendar size={24} />
-          <span className="text-sm">Ver Calendario</span>
+          <span className="text-sm font-medium">Calendario</span>
         </Button>
+
         <Button 
-          variant="outline" 
           onClick={() => onViewChange('insights')}
-          className="p-4 h-auto flex flex-col gap-2 bg-background/50 hover:bg-background/80 transition-all duration-200"
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-card hover:shadow-emotion transition-all duration-300"
         >
-          <TrendingUp size={24} />
-          <span className="text-sm">Ver Insights</span>
+          <BarChart3 size={24} />
+          <span className="text-sm font-medium">Insights</span>
+        </Button>
+
+        <Button 
+          onClick={() => onViewChange('map')}
+          variant="outline"
+          className="h-24 flex flex-col items-center justify-center gap-2 bg-gradient-card hover:shadow-emotion transition-all duration-300"
+        >
+          <Map size={24} />
+          <span className="text-sm font-medium">Mapa</span>
         </Button>
       </div>
     </div>

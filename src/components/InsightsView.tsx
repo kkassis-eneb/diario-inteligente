@@ -1,99 +1,211 @@
+import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-
-const emotionData = [
-  { name: 'Alegría', count: 8, percentage: 32, color: '#F7D154', emoji: '🙂' },
-  { name: 'Calma', count: 6, percentage: 24, color: '#6BAAED', emoji: '😌' },
-  { name: 'Amor', count: 4, percentage: 16, color: '#F6A6C1', emoji: '🥰' },
-  { name: 'Inspiración', count: 3, percentage: 12, color: '#FFB36B', emoji: '💡' },
-  { name: 'Tristeza', count: 2, percentage: 8, color: '#9A85C8', emoji: '😔' },
-  { name: 'Ansiedad', count: 2, percentage: 8, color: '#2E2E2E', emoji: '😟' },
-];
-
-const behaviorData = [
-  { name: 'Autocuidado', count: 12, icon: '🧘‍♀️' },
-  { name: 'Social', count: 8, icon: '👥' },
-  { name: 'Trabajo', count: 6, icon: '💼' },
-  { name: 'Naturaleza', count: 4, icon: '🌿' },
-];
-
-const insights = [
-  "Tus momentos de mayor bienestar coinciden con actividades al aire libre.",
-  "Los lunes muestran una tendencia hacia emociones de menor valencia.",
-  "Hay una correlación positiva entre ejercicio y estados de calma.",
-  "Tu patrón emocional mejora consistentemente durante los fines de semana.",
-];
+import { EmotionCard } from "./EmotionCard";
+import { supabase } from '@/integrations/supabase/client';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 export const InsightsView = () => {
+  const [stats, setStats] = useState({
+    totalEntradas: 0,
+    entradasPorMes: [],
+    palabrasFreuentes: [],
+    entradasPorFuente: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      // Get total entries
+      const { data: entradas, error: entradasError } = await supabase
+        .from('entradas')
+        .select('*');
+
+      if (entradasError) throw entradasError;
+
+      // Process data
+      const totalEntradas = entradas?.length || 0;
+      
+      // Group by month
+      const entriesByMonth = entradas?.reduce((acc: any, entry: any) => {
+        const month = new Date(entry.fecha).toLocaleDateString('es-ES', { month: 'short' });
+        acc[month] = (acc[month] || 0) + 1;
+        return acc;
+      }, {}) || {};
+
+      const entradasPorMes = Object.entries(entriesByMonth).map(([month, count]) => ({
+        month,
+        count
+      }));
+
+      // Group by source
+      const entriesBySource = entradas?.reduce((acc: any, entry: any) => {
+        acc[entry.fuente] = (acc[entry.fuente] || 0) + 1;
+        return acc;
+      }, {}) || {};
+
+      const entradasPorFuente = Object.entries(entriesBySource).map(([fuente, count]) => ({
+        name: fuente,
+        value: count,
+        color: fuente === 'foto' ? 'hsl(var(--primary))' : 'hsl(var(--accent))'
+      }));
+
+      // Extract frequent words from OCR text
+      const allText = entradas?.map(e => e.texto_ocr).filter(Boolean).join(' ') || '';
+      const words = allText.toLowerCase()
+        .replace(/[^\w\sáéíóúñü]/g, '')
+        .split(/\s+/)
+        .filter(word => word.length > 3 && !['para', 'esta', 'esto', 'pero', 'solo', 'todo', 'muy', 'más', 'también', 'donde', 'como', 'cuando', 'porque'].includes(word));
+
+      const wordFreq = words.reduce((acc: any, word: string) => {
+        acc[word] = (acc[word] || 0) + 1;
+        return acc;
+      }, {});
+
+      const palabrasFreuentes = Object.entries(wordFreq)
+        .sort(([,a]: any, [,b]: any) => b - a)
+        .slice(0, 10)
+        .map(([word, count]) => ({ word, count }));
+
+      setStats({
+        totalEntradas,
+        entradasPorMes,
+        palabrasFreuentes,
+        entradasPorFuente
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mock emotion data for now
+  const emotionData = [
+    { emotion: "Alegría", value: 35, color: "hsl(var(--emotion-joy))", emoji: "😊" },
+    { emotion: "Calma", value: 28, color: "hsl(var(--emotion-calm))", emoji: "😌" },
+    { emotion: "Inspiración", value: 20, color: "hsl(var(--emotion-inspiration))", emoji: "✨" },
+    { emotion: "Nostalgia", value: 17, color: "hsl(var(--emotion-sadness))", emoji: "🌙" },
+  ];
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="p-6 bg-gradient-card shadow-card animate-pulse">
+            <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
+            <div className="h-32 bg-muted rounded"></div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Emotion Wheel */}
-      <Card className="p-6 bg-gradient-card shadow-card">
-        <h2 className="text-xl font-bold mb-4 text-foreground">Rueda Emocional</h2>
-        <div className="space-y-4">
-          {emotionData.map((emotion, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{emotion.emoji}</span>
-                  <span className="font-medium text-foreground">{emotion.name}</span>
-                </div>
-                <span className="text-sm text-muted-foreground">{emotion.percentage}%</span>
-              </div>
-              <Progress 
-                value={emotion.percentage} 
-                className="h-2"
-                style={{
-                  // @ts-ignore
-                  '--progress-background': emotion.color + '40',
-                  '--progress-foreground': emotion.color,
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      </Card>
+      <div className="text-center py-6">
+        <h1 className="text-2xl font-bold text-foreground mb-2">
+          Insights Emocionales
+        </h1>
+        <p className="text-muted-foreground">
+          Patrones y tendencias en tu diario
+        </p>
+      </div>
 
-      {/* Valencia Trend */}
-      <Card className="p-6 bg-gradient-wellbeing shadow-card">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Tendencia de Bienestar</h3>
-        <div className="text-center">
-          <div className="text-3xl font-bold text-primary mb-2">75%</div>
-          <p className="text-muted-foreground">Promedio de valencia positiva</p>
-          <div className="mt-4 flex justify-center">
-            <div className="text-6xl">📈</div>
+      {/* Stats Overview */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-4 bg-gradient-joy text-center">
+          <div className="text-2xl font-bold text-foreground">{stats.totalEntradas}</div>
+          <div className="text-sm text-muted-foreground">Entradas Totales</div>
+        </Card>
+        <Card className="p-4 bg-gradient-calm text-center">
+          <div className="text-2xl font-bold text-foreground">
+            {stats.entradasPorMes.length}
           </div>
-        </div>
-      </Card>
+          <div className="text-sm text-muted-foreground">Meses Activos</div>
+        </Card>
+      </div>
 
-      {/* Behavior Tags */}
-      <Card className="p-6 bg-gradient-card shadow-card">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Comportamientos Frecuentes</h3>
-        <div className="grid grid-cols-2 gap-3">
-          {behaviorData.map((behavior, index) => (
-            <div key={index} className="bg-background/50 rounded-lg p-3 text-center">
-              <div className="text-2xl mb-1">{behavior.icon}</div>
-              <div className="font-medium text-foreground">{behavior.name}</div>
-              <div className="text-sm text-muted-foreground">{behavior.count} veces</div>
-            </div>
+      {/* Emotion Distribution */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Distribución Emocional</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {emotionData.map((emotion, index) => (
+            <EmotionCard
+              key={index}
+              emotion={{
+                name: emotion.emotion,
+                emoji: emotion.emoji,
+                color: emotion.color,
+                valencia: 'bienestar' as const
+              }}
+              intensity={emotion.value}
+            />
           ))}
         </div>
-      </Card>
+      </div>
 
-      {/* AI Insights */}
-      <Card className="p-6 bg-gradient-neutral shadow-card">
-        <h3 className="text-lg font-semibold mb-4 text-foreground">Insights Personales</h3>
-        <div className="space-y-3">
-          {insights.map((insight, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs text-primary font-bold">{index + 1}</span>
+      {/* Entries by Month */}
+      {stats.entradasPorMes.length > 0 && (
+        <Card className="p-6 bg-gradient-card shadow-card">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Entradas por Mes</h3>
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stats.entradasPorMes}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Bar dataKey="count" fill="hsl(var(--primary))" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
+      {/* Sources Distribution */}
+      {stats.entradasPorFuente.length > 0 && (
+        <Card className="p-6 bg-gradient-card shadow-card">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Entradas por Fuente</h3>
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={stats.entradasPorFuente}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={60}
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}`}
+                >
+                  {stats.entradasPorFuente.map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
+      {/* Frequent Words */}
+      {stats.palabrasFreuentes.length > 0 && (
+        <Card className="p-6 bg-gradient-card shadow-card">
+          <h3 className="text-lg font-semibold text-foreground mb-4">Palabras Más Frecuentes</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {stats.palabrasFreuentes.slice(0, 8).map((item: any, index: number) => (
+              <div 
+                key={index} 
+                className="flex justify-between items-center p-2 bg-background/50 rounded text-sm"
+              >
+                <span className="text-foreground capitalize">{item.word}</span>
+                <span className="text-muted-foreground">{item.count}</span>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">{insight}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

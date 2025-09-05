@@ -1,4 +1,4 @@
-import { Calendar, Home, Brain, Map, Plus } from "lucide-react";
+import { Home, Calendar, BarChart3, Camera, Map, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NavigationProps {
@@ -9,8 +9,10 @@ interface NavigationProps {
 export const Navigation = ({ currentView, onViewChange }: NavigationProps) => {
   const navItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
+    { id: 'feed', icon: BookOpen, label: 'Feed' },
     { id: 'calendar', icon: Calendar, label: 'Calendario' },
-    { id: 'insights', icon: Brain, label: 'Insights' },
+    { id: 'insights', icon: BarChart3, label: 'Insights' },
+    { id: 'scan', icon: Camera, label: 'Escanear' },
     { id: 'map', icon: Map, label: 'Mapa' },
   ];
 
@@ -34,14 +36,6 @@ export const Navigation = ({ currentView, onViewChange }: NavigationProps) => {
               <span className="text-xs font-medium">{item.label}</span>
             </Button>
           ))}
-          <Button
-            onClick={() => onViewChange('scan')}
-            className="flex flex-col items-center gap-1 h-auto py-2 px-3 bg-primary text-primary-foreground shadow-emotion rounded-full"
-            size="sm"
-          >
-            <Plus size={20} />
-            <span className="text-xs font-medium">Escanear</span>
-          </Button>
         </div>
       </div>
     </div>
