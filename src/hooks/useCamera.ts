@@ -1,16 +1,26 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import { useToast } from '@/hooks/use-toast';
 
-export const useCamera = () => {
+export const useCamera = (userId?: string) => {
   const [isCapturing, setIsCapturing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const { uploadFile } = useFileUpload();
 
   const captureAndUpload = async () => {
-    try {
-      setIsCapturing(true);
+    if (!userId) {
+      toast({
+        title: "Error",
+        description: "Debes estar autenticado para tomar fotos.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    setIsCapturing(true);
+
+    try {
       // Check if camera is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Camera not supported on this device');
@@ -41,68 +51,23 @@ export const useCamera = () => {
       // Stop the stream
       stream.getTracks().forEach(track => track.stop());
 
-      // Convert to blob
+      // Convert to blob and create file
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.8);
       });
 
+      const file = new File([blob], `foto_${Date.now()}.jpg`, { type: 'image/jpeg' });
+
       setIsCapturing(false);
       setIsUploading(true);
 
-      // Upload to Supabase Storage
-      const fileName = `foto_${Date.now()}.jpg`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('diario-fotos')
-        .upload(fileName, blob);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('diario-fotos')
-        .getPublicUrl(fileName);
-
-      // Create entrada record
-      const { data: entradaData, error: entradaError } = await supabase
-        .from('entradas')
-        .insert({
-          fuente: 'foto',
-          estado_validacion: 'pending'
-        })
-        .select()
-        .single();
-
-      if (entradaError) throw entradaError;
-
-      // Create archivo record
-      const { error: archivoError } = await supabase
-        .from('archivos')
-        .insert({
-          entrada_id: entradaData.id,
-          tipo: 'imagen',
-          url_privada: publicUrl
-        });
-
-      if (archivoError) throw archivoError;
-
-      // Trigger automation
-      const { error: automationError } = await supabase.functions.invoke('on-file-upload', {
-        body: {
-          entrada_id: entradaData.id,
-          file_url: publicUrl
-        }
-      });
-
-      if (automationError) {
-        console.warn('Automation trigger failed:', automationError);
-      }
+      // Use the file upload hook for consistency
+      await uploadFile(file, new Date(), userId);
 
       toast({
         title: "Foto capturada exitosamente",
         description: "Tu imagen ha sido guardada y está siendo procesada.",
       });
-
-      return { entradaId: entradaData.id, fileUrl: publicUrl };
 
     } catch (error) {
       console.error('Camera capture error:', error);

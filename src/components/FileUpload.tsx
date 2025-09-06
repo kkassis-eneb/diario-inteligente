@@ -5,17 +5,22 @@ import { FileText, Upload, Loader2 } from 'lucide-react';
 import { useFileUpload } from '@/hooks/useFileUpload';
 
 interface FileUploadProps {
+  selectedDate?: Date;
+  userId?: string;
   onUploadComplete?: () => void;
 }
 
-export const FileUpload = ({ onUploadComplete }: FileUploadProps) => {
+export const FileUpload = ({ selectedDate, userId, onUploadComplete }: FileUploadProps) => {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const { uploadFile, isUploading } = useFileUpload();
 
   const handleFileSelect = async (file: File) => {
+    if (!userId) {
+      return; // Don't proceed if not authenticated
+    }
     try {
-      await uploadFile(file);
+      await uploadFile(file, selectedDate, userId);
       onUploadComplete?.();
     } catch (error) {
       // Error is handled in the hook

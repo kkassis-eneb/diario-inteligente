@@ -8,13 +8,18 @@ export const useFileUpload = () => {
   const { toast } = useToast();
   const { processImage } = useOCR();
 
-  const uploadFile = async (file: File, selectedDate?: Date) => {
+  const uploadFile = async (file: File, selectedDate?: Date, userId?: string) => {
     setIsUploading(true);
+    
+    if (!userId) {
+      throw new Error('Usuario no autenticado');
+    }
+    
     try {
       const fecha = selectedDate || new Date();
       const year = fecha.getFullYear();
       const fileName = `${Date.now()}_${file.name}`;
-      const filePath = `${year}/${fileName}`;
+      const filePath = `${userId}/${year}/${fileName}`;
 
       // Upload file to storage
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -41,7 +46,8 @@ export const useFileUpload = () => {
           .insert({
             fecha: fechaString,
             fuente: file.type.includes('pdf') ? 'pdf' : 'foto',
-            estado_validacion: 'pending'
+            estado_validacion: 'pending',
+            user_id: userId
           })
           .select('id')
           .single();
@@ -57,6 +63,7 @@ export const useFileUpload = () => {
           entrada_id: entradaId,
           tipo: file.type.includes('pdf') ? 'pdf' : 'imagen',
           url_privada: uploadData.path,
+          user_id: userId
         });
 
       if (archivoError) throw archivoError;

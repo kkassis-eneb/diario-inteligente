@@ -7,11 +7,12 @@ import { FileUpload } from "@/components/FileUpload";
 
 interface ScanViewProps {
   onViewChange: (view: string) => void;
+  userId?: string;
 }
 
-export const ScanView = ({ onViewChange }: ScanViewProps) => {
+export const ScanView = ({ onViewChange, userId }: ScanViewProps) => {
   const { toast } = useToast();
-  const { captureAndUpload, isProcessing } = useCamera();
+  const { captureAndUpload, isProcessing } = useCamera(userId);
 
   const handleCameraCapture = async () => {
     try {
@@ -56,12 +57,16 @@ export const ScanView = ({ onViewChange }: ScanViewProps) => {
           </Button>
         </Card>
 
-        <FileUpload onUploadComplete={() => {
-          toast({
-            title: "Archivo procesado",
-            description: "Tu archivo ha sido procesado correctamente",
-          });
-        }} />
+        <FileUpload 
+          selectedDate={new Date()} 
+          userId={userId}
+          onUploadComplete={() => {
+            toast({
+              title: "Archivo procesado",
+              description: "Tu archivo ha sido procesado correctamente",
+            });
+          }} 
+        />
       </div>
 
       <Card className="p-6 bg-gradient-neutral shadow-card">
