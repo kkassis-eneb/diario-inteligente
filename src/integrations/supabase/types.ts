@@ -22,6 +22,7 @@ export type Database = {
           id: string
           tipo: string
           url_privada: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -30,6 +31,7 @@ export type Database = {
           id?: string
           tipo: string
           url_privada: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           id?: string
           tipo?: string
           url_privada?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -78,6 +81,7 @@ export type Database = {
           texto_ocr: string | null
           ubicacion_lat: number | null
           ubicacion_lon: number | null
+          user_id: string | null
           valencia: string | null
         }
         Insert: {
@@ -108,6 +112,7 @@ export type Database = {
           texto_ocr?: string | null
           ubicacion_lat?: number | null
           ubicacion_lon?: number | null
+          user_id?: string | null
           valencia?: string | null
         }
         Update: {
@@ -138,7 +143,32 @@ export type Database = {
           texto_ocr?: string | null
           ubicacion_lat?: number | null
           ubicacion_lon?: number | null
+          user_id?: string | null
           valencia?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
