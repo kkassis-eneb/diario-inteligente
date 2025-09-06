@@ -27,9 +27,21 @@ export const useOCR = () => {
       }
 
       // Update entrada with OCR text
+      const { data: existingEntrada, error: fetchError } = await supabase
+        .from('entradas')
+        .select('texto_ocr')
+        .eq('id', entradaId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Concatenate with existing text if any
+      const existingText = existingEntrada?.texto_ocr || '';
+      const newText = existingText ? `${existingText}\n\n---\n\n${text}` : text;
+
       const { error } = await supabase
         .from('entradas')
-        .update({ texto_ocr: text })
+        .update({ texto_ocr: newText })
         .eq('id', entradaId);
 
       if (error) throw error;

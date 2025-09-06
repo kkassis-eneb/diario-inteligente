@@ -142,7 +142,8 @@ export const InsightsView = () => {
                 color: emotion.color,
                 valencia: 'bienestar' as const
               }}
-              intensity={emotion.value}
+              count={emotion.value}
+              percentage={Math.round((emotion.value / emotionData.reduce((sum, e) => sum + e.value, 0)) * 100)}
             />
           ))}
         </div>

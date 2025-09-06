@@ -31,7 +31,7 @@ export const useFileUpload = () => {
         .from('entradas')
         .select('id')
         .eq('fecha', fechaString)
-        .single();
+        .maybeSingle();
 
       if (existingEntrada) {
         entradaId = existingEntrada.id;
@@ -41,6 +41,7 @@ export const useFileUpload = () => {
           .insert({
             fecha: fechaString,
             fuente: file.type.includes('pdf') ? 'pdf' : 'foto',
+            estado_validacion: 'pending'
           })
           .select('id')
           .single();

@@ -1,4 +1,4 @@
-import { Home, Calendar, BarChart3, Camera, Map, BookOpen } from "lucide-react";
+import { Home, Calendar, BarChart3, Camera, Map, BookOpen, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NavigationProps {
@@ -10,6 +10,7 @@ export const Navigation = ({ currentView, onViewChange }: NavigationProps) => {
   const navItems = [
     { id: 'home', icon: Home, label: 'Inicio' },
     { id: 'feed', icon: BookOpen, label: 'Feed' },
+    { id: 'notes', icon: FileText, label: 'Notas' },
     { id: 'calendar', icon: Calendar, label: 'Calendario' },
     { id: 'insights', icon: BarChart3, label: 'Insights' },
     { id: 'scan', icon: Camera, label: 'Escanear' },
