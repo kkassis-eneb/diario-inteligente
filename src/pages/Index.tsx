@@ -5,7 +5,7 @@ import { CalendarView } from "@/components/CalendarView";
 import { InsightsView } from "@/components/InsightsView";
 import { ScanView } from "@/components/ScanView";
 import { FeedView } from "@/components/FeedView";
-import { NotesView } from "@/components/NotesView";
+import { TextosDigitalizadosView } from "@/components/TextosDigitalizadosView";
 import { EntryDetail } from "@/components/EntryDetail";
 import { AuthView } from "@/components/AuthView";
 import { MapView } from "@/components/MapView";
@@ -82,8 +82,8 @@ const Index = () => {
             onEntrySelect={setSelectedEntryId}
           />
         );
-      case 'notes':
-        return <NotesView onViewChange={setCurrentView} />;
+      case 'textos':
+        return <TextosDigitalizadosView onViewChange={setCurrentView} />;
       case 'calendar':
         return <CalendarView />;
       case 'insights':
