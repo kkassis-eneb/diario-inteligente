@@ -69,13 +69,17 @@ export type Database = {
           fuente: string
           hash_archivo: string | null
           id: string
+          improved_text: string | null
+          improvement_status: string | null
           intensidad: number | null
+          is_private: boolean | null
           lugar_nombre: string | null
           lugar_tipo: string | null
           mes: number | null
           origen_ubicacion: string | null
           pais: string | null
           region: string | null
+          tags: string[] | null
           tags_comportamiento: string[] | null
           tags_tema: string[] | null
           texto_ocr: string | null
@@ -100,13 +104,17 @@ export type Database = {
           fuente: string
           hash_archivo?: string | null
           id?: string
+          improved_text?: string | null
+          improvement_status?: string | null
           intensidad?: number | null
+          is_private?: boolean | null
           lugar_nombre?: string | null
           lugar_tipo?: string | null
           mes?: number | null
           origen_ubicacion?: string | null
           pais?: string | null
           region?: string | null
+          tags?: string[] | null
           tags_comportamiento?: string[] | null
           tags_tema?: string[] | null
           texto_ocr?: string | null
@@ -131,13 +139,17 @@ export type Database = {
           fuente?: string
           hash_archivo?: string | null
           id?: string
+          improved_text?: string | null
+          improvement_status?: string | null
           intensidad?: number | null
+          is_private?: boolean | null
           lugar_nombre?: string | null
           lugar_tipo?: string | null
           mes?: number | null
           origen_ubicacion?: string | null
           pais?: string | null
           region?: string | null
+          tags?: string[] | null
           tags_comportamiento?: string[] | null
           tags_tema?: string[] | null
           texto_ocr?: string | null
