@@ -67,9 +67,17 @@ export const TextosDigitalizadosView = ({ onViewChange }: TextosDigitalizadosVie
   const fetchTextos = async () => {
     try {
       setLoading(true);
+      // Get current user for RLS filtering
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error('Usuario no autenticado');
+      }
+
       const { data, error } = await supabase
         .from('entradas')
         .select('*')
+        .eq('user_id', user.id)
         .not('texto_ocr', 'is', null)
         .neq('texto_ocr', '')
         .order('created_at', { ascending: false });
@@ -136,25 +144,27 @@ export const TextosDigitalizadosView = ({ onViewChange }: TextosDigitalizadosVie
   const improveTextWithAI = async (entryId: string, text: string) => {
     setIsImproving(true);
     try {
-      const response = await fetch('/api/improve-text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+      const { data, error } = await supabase.functions.invoke('improve-text', {
+        body: { text }
       });
 
-      if (!response.ok) throw new Error('Failed to improve text');
+      if (error) throw error;
 
-      const { improvedText } = await response.json();
+      const { improvedText } = data;
 
-      const { error } = await supabase
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Usuario no autenticado');
+
+      const { error: updateError } = await supabase
         .from('entradas')
         .update({
           improved_text: improvedText,
           improvement_status: 'completed'
         })
-        .eq('id', entryId);
+        .eq('id', entryId)
+        .eq('user_id', user.id);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       toast({
         title: "Texto mejorado",
@@ -274,10 +284,14 @@ export const TextosDigitalizadosView = ({ onViewChange }: TextosDigitalizadosVie
 
   const togglePrivacy = async (entryId: string, currentPrivate: boolean) => {
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Usuario no autenticado');
+
       const { error } = await supabase
         .from('entradas')
         .update({ is_private: !currentPrivate })
-        .eq('id', entryId);
+        .eq('id', entryId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
@@ -299,10 +313,14 @@ export const TextosDigitalizadosView = ({ onViewChange }: TextosDigitalizadosVie
 
   const updateTags = async (entryId: string, newTags: string[]) => {
     try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error('Usuario no autenticado');
+
       const { error } = await supabase
         .from('entradas')
         .update({ tags: newTags })
-        .eq('id', entryId);
+        .eq('id', entryId)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 

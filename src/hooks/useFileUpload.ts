@@ -21,10 +21,14 @@ export const useFileUpload = () => {
       const fileName = `${Date.now()}_${file.name}`;
       const filePath = `${userId}/${year}/${fileName}`;
 
-      // Upload file to storage
+      // Upload file to storage with metadata.owner for RLS
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('diario-fotos')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+          metadata: { owner: userId }
+        });
 
       if (uploadError) throw uploadError;
 
@@ -36,6 +40,7 @@ export const useFileUpload = () => {
         .from('entradas')
         .select('id')
         .eq('fecha', fechaString)
+        .eq('user_id', userId)
         .maybeSingle();
 
       if (existingEntrada) {
@@ -68,13 +73,15 @@ export const useFileUpload = () => {
 
       if (archivoError) throw archivoError;
 
-      // Process OCR if it's an image
+      // Process OCR if it's an image using signed URL
       if (file.type.includes('image')) {
-        const { data: { publicUrl } } = supabase.storage
+        const { data: signedUrlData, error: urlError } = await supabase.storage
           .from('diario-fotos')
-          .getPublicUrl(uploadData.path);
+          .createSignedUrl(uploadData.path, 600); // 10 minutes
         
-        await processImage(publicUrl, entradaId);
+        if (urlError) throw urlError;
+        
+        await processImage(signedUrlData.signedUrl, entradaId);
       }
 
       toast({
