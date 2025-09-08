@@ -22,7 +22,7 @@ export type Database = {
           id: string
           tipo: string
           url_privada: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -31,7 +31,7 @@ export type Database = {
           id?: string
           tipo: string
           url_privada: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -40,7 +40,7 @@ export type Database = {
           id?: string
           tipo?: string
           url_privada?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -85,7 +85,7 @@ export type Database = {
           texto_ocr: string | null
           ubicacion_lat: number | null
           ubicacion_lon: number | null
-          user_id: string | null
+          user_id: string
           valencia: string | null
         }
         Insert: {
@@ -120,7 +120,7 @@ export type Database = {
           texto_ocr?: string | null
           ubicacion_lat?: number | null
           ubicacion_lon?: number | null
-          user_id?: string | null
+          user_id: string
           valencia?: string | null
         }
         Update: {
@@ -155,7 +155,7 @@ export type Database = {
           texto_ocr?: string | null
           ubicacion_lat?: number | null
           ubicacion_lon?: number | null
-          user_id?: string | null
+          user_id?: string
           valencia?: string | null
         }
         Relationships: []

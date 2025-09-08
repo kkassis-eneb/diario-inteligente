@@ -1,7 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const SUPABASE_URL = 'https://kvqvixtwfymtyehwvaet.supabase.co';
+const SUPABASE_SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +17,35 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify JWT authorization
+  const auth = req.headers.get('Authorization');
+  if (!auth?.startsWith('Bearer ')) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized - Missing or invalid authorization header' }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 401 
+      }
+    );
+  }
+
   try {
+    // Create Supabase client with user's JWT for RLS
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
+      global: { headers: { Authorization: auth } },
+    });
+
+    // Verify user authentication
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid user token' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      );
+    }
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
@@ -25,7 +56,7 @@ serve(async (req) => {
       throw new Error('Text is required');
     }
 
-    console.log('Improving text with OpenAI:', text.substring(0, 100) + '...');
+    console.log('Improving text with OpenAI for user:', user.id, 'Text preview:', text.substring(0, 100) + '...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
