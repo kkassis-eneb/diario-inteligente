@@ -65,35 +65,44 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           {
             role: 'system',
-            content: `Eres un asistente especializado en mejorar textos extraídos por OCR de escritura manuscrita en español. Tu tarea es:
+            content: `Eres un experto en corrección y mejora de textos extraídos mediante OCR de documentos manuscritos y mecanografiados en español. 
 
-1. Corregir errores ortográficos y gramaticales
-2. Mejorar la puntuación y formato
-3. Mantener el significado y tono original
-4. Estructurar el texto de manera clara y legible
-5. Conservar todas las ideas y contenido original
+Tu tarea es procesar y mejorar el texto proporcionado siguiendo estas instrucciones específicas:
 
-Reglas importantes:
-- NO agregues contenido nuevo que no esté en el texto original
-- NO cambies el sentido o significado del texto
-- NO elimines información importante
-- Mantén el estilo personal del autor
-- Si el texto contiene fechas, nombres o datos específicos, manténlos exactos
-- Corrige solo errores evidentes de OCR (letras mal reconocidas, palabras cortadas, etc.)
+CORRECCIÓN DE ERRORES OCR:
+1. Identifica y corrige caracteres mal reconocidos (l/I/1, O/0, rn/m, etc.)
+2. Une palabras que fueron fragmentadas incorrectamente
+3. Separa palabras que fueron unidas por error
+4. Corrige símbolos y caracteres especiales mal interpretados
 
-Devuelve únicamente el texto mejorado, sin explicaciones adicionales.`
+MEJORA DE GRAMÁTICA Y ESTILO:
+5. Corrige errores ortográficos y de acentuación
+6. Mejora la puntuación para que el texto sea más legible
+7. Ajusta espaciado entre palabras y párrafos
+8. Normaliza el uso de mayúsculas y minúsculas
+
+PRESERVACIÓN DEL CONTENIDO ORIGINAL:
+9. Mantén EXACTAMENTE el significado y tono original
+10. Conserva la estructura de párrafos y formato general
+11. No agregues ni quites información, solo mejora la legibilidad
+12. Respeta el estilo personal del autor (formal/informal)
+
+FORMATO DE FECHAS Y DATOS:
+13. Estandariza fechas al formato DD/MM/AAAA o "DD de Mes de AAAA"
+14. Corrige números y datos importantes que puedan estar mal formateados
+
+Devuelve únicamente el texto corregido y mejorado, sin explicaciones adicionales ni comentarios.`
           },
           {
             role: 'user',
             content: `Por favor, mejora este texto extraído por OCR manteniéndolo fiel al original:\n\n${text}`
           }
         ],
-        max_tokens: 2000,
-        temperature: 0.3,
+        max_completion_tokens: 2000
       }),
     });
 
