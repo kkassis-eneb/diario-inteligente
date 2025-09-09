@@ -5,9 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const SUPABASE_URL = 'https://kvqvixtwfymtyehwvaet.supabase.co'
-const SUPABASE_SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-
 interface FileUploadPayload {
   entrada_id: string;
   file_url: string;
@@ -19,29 +16,12 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Verify JWT authorization
-  const auth = req.headers.get('Authorization');
-  if (!auth?.startsWith('Bearer ')) {
-    return new Response(
-      JSON.stringify({ error: 'Unauthorized - Missing or invalid authorization header' }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401 
-      }
-    );
-  }
-
   try {
-    // Create Supabase client with user's JWT for RLS
-    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE, {
-      global: { headers: { Authorization: auth } },
-    });
-
-    // Verify user authentication
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
+    // Verify JWT authentication
+    const auth = req.headers.get('Authorization');
+    if (!auth?.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid user token' }),
+        JSON.stringify({ error: 'Unauthorized - Missing or invalid token' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 401 
@@ -49,24 +29,38 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { entrada_id, file_url }: FileUploadPayload = await req.json();
+    // Create authenticated Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Supabase configuration missing');
+    }
 
-    // Validate input
-    if (!entrada_id || !file_url) {
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      global: { headers: { Authorization: auth } },
+    });
+
+    // Verify user authentication
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
       return new Response(
-        JSON.stringify({ error: 'Invalid input - entrada_id and file_url are required' }),
+        JSON.stringify({ error: 'Unauthorized - Invalid user' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
+          status: 401 
         }
       );
     }
 
+    console.log('Authenticated user for file upload:', user.id);
+
+    const { entrada_id, file_url }: FileUploadPayload = await req.json();
+
     console.log('Processing file upload automation for entrada:', entrada_id);
     console.log('File URL:', file_url);
-    console.log('User ID:', user.id);
 
-    // Verify that the entrada belongs to the authenticated user
+    // Verify the entrada belongs to the authenticated user (security check)
     const { data: entrada, error: entradaError } = await supabaseClient
       .from('entradas')
       .select('id, user_id')
